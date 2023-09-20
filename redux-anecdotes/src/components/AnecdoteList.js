@@ -3,7 +3,7 @@ import { handleVoteIncrease } from "../reducers/anecdoteReducer";
 
 const Anecdote = ({ voteHandler, anecdote }) => {
   return (
-    <div key={anecdote.id}>
+    <div>
       <div>{anecdote.content}</div>
       <div>
         has {anecdote.votes}
@@ -21,17 +21,31 @@ const AnecdoteList = () => {
     dispatch(handleVoteIncrease(id));
   };
 
-  const anecdotes = useSelector((state) => state);
-
-  const sortedAnecdotes = [...anecdotes];
-  sortedAnecdotes.sort((anecdoteA, anecdoteB) => {
-    return anecdoteB.votes - anecdoteA.votes;
+  const anecdotes = useSelector(({ filter, anecdotes }) => {
+    if (filter === "") {
+      return anecdotes.sort((anecdoteA, anecdoteB) => {
+        return anecdoteB.votes - anecdoteA.votes;
+      });
+    } else {
+      return anecdotes.filter((anecdote) =>
+        anecdote.content
+          .toLowerCase()
+          .includes(filter.toLowerCase())
+          .sort((anecdoteA, anecdoteB) => {
+            return anecdoteB.votes - anecdoteA.votes;
+          })
+      );
+    }
   });
 
   return (
     <div>
-      {sortedAnecdotes.map((anecdote) => (
-        <Anecdote anecdote={anecdote} voteHandler={() => vote(anecdote.id)} />
+      {anecdotes.map((anecdote) => (
+        <Anecdote
+          key={anecdote.id}
+          anecdote={anecdote}
+          voteHandler={() => vote(anecdote.id)}
+        />
       ))}
     </div>
   );
