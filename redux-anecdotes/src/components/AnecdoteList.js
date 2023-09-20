@@ -21,26 +21,23 @@ const AnecdoteList = () => {
     dispatch(handleVoteIncrease(id));
   };
 
-  const anecdotes = useSelector(({ filter, anecdotes }) => {
-    if (filter === "") {
-      return anecdotes.sort((anecdoteA, anecdoteB) => {
-        return anecdoteB.votes - anecdoteA.votes;
-      });
-    } else {
-      return anecdotes.filter((anecdote) =>
-        anecdote.content
-          .toLowerCase()
-          .includes(filter.toLowerCase())
-          .sort((anecdoteA, anecdoteB) => {
-            return anecdoteB.votes - anecdoteA.votes;
-          })
+  const anecdotes = useSelector((state) => {
+    if (state.filter !== "") {
+      return state.anecdotes.filter((anecdote) =>
+        anecdote.content.toLowerCase().includes(state.filter.toLowerCase())
       );
+    } else {
+      return state.anecdotes;
     }
   });
 
+  const sortedAnecdotes = [...anecdotes].sort(
+    (anecdoteA, anecdoteB) => anecdoteB.votes - anecdoteA.votes
+  );
+
   return (
     <div>
-      {anecdotes.map((anecdote) => (
+      {sortedAnecdotes.map((anecdote) => (
         <Anecdote
           key={anecdote.id}
           anecdote={anecdote}
